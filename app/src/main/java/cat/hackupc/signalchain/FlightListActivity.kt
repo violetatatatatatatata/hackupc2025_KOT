@@ -10,17 +10,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cat.hackupc.signalchain.model.Flight
+import cat.hackupc.signalchain.repository.FlightRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.appcompat.widget.Toolbar
 
 class FlightListActivity : AppCompatActivity() {
 
-    private val ADD_FLIGHT_REQUEST_CODE = 102
-    private val allFlights = mutableListOf<Flight>()
     private lateinit var adapter: FlightAdapter
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var searchView: SearchView
 
     override fun attachBaseContext(newBase: Context) {
-        val lang = newBase.getSharedPreferences("settings", MODE_PRIVATE).getString("lang", "en") ?: "en"
+        val lang = newBase.getSharedPreferences("settings", MODE_PRIVATE)
+            .getString("lang", "en") ?: "en"
         super.attachBaseContext(LocaleHelper.setLocale(newBase, lang))
     }
 
@@ -29,26 +31,18 @@ class FlightListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_flight_list)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
         toolbar.setTitleTextColor(Color.WHITE)
+        setSupportActionBar(toolbar)
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        allFlights.addAll(
-            listOf(
-                Flight("IB123", "Barcelona", "A1", "10:45", R.string.status_on_time),
-                Flight("VY456", "Madrid", "B2", "11:30", R.string.status_delayed),
-                Flight("UX789", "Valencia", "C3", "12:15", R.string.status_boarding)
-            )
-        )
-
-        val recyclerView = findViewById<RecyclerView>(R.id.flightRecyclerView)
+        recyclerView = findViewById(R.id.flightRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = FlightAdapter(allFlights)
+        adapter = FlightAdapter(FlightRepository.flights)
         recyclerView.adapter = adapter
 
-        val searchView = findViewById<SearchView>(R.id.flightSearchView)
+        searchView = findViewById(R.id.flightSearchView)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?) = false
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -63,10 +57,9 @@ class FlightListActivity : AppCompatActivity() {
             searchText?.setHintTextColor(Color.GRAY)
         }
 
-        // FAB: Añadir vuelo
         findViewById<FloatingActionButton>(R.id.fabAddFlight).setOnClickListener {
             val intent = Intent(this, AddFlightActivity::class.java)
-            startActivityForResult(intent, ADD_FLIGHT_REQUEST_CODE)
+            startActivityForResult(intent, 102)
         }
     }
 
@@ -78,11 +71,27 @@ class FlightListActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == ADD_FLIGHT_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == 102 && resultCode == RESULT_OK) {
             val flight = data?.getSerializableExtra("flight") as? Flight
             flight?.let {
-                allFlights.add(it)
-                adapter.filter("") // recarga
+                FlightRepository.flights.add(it)
+                adapter.filter(searchView.query.toString())
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        instance = this
+        adapter.filter(searchView.query.toString())
+    }
+
+    companion object {
+        private lateinit var instance: FlightListActivity
+
+        fun refreshData() {
+            if (::instance.isInitialized) {
+                instance.adapter.filter(instance.searchView.query.toString())
             }
         }
     }
