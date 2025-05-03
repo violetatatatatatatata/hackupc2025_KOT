@@ -8,29 +8,30 @@
     android:padding="24dp"
     android:background="#000000">
 
+    <TextView
+        android:id="@+id/tvChooseLanguage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose your language\nElige un idioma"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_marginBottom="24dp" />
+
     <Button
-        android:id="@+id/btnFlights"
+        android:id="@+id/btnEnglish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Flight Info"
+        android:text="English"
         android:textColor="#FFFFFF"
         android:backgroundTint="#1E88E5"
         android:layout_marginBottom="16dp" />
 
     <Button
-        android:id="@+id/btnPeople"
+        android:id="@+id/btnSpanish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="People Location"
+        android:text="Español"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#43A047"
-        android:layout_marginBottom="16dp" />
-
-    <Button
-        android:id="@+id/btnAlerts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Alerts"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#E53935" />
+        android:backgroundTint="#43A047" />
 </LinearLayout>

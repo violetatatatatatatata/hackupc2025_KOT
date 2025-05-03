@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SignalChain</string>
+    <string name="choose_language">Elige tu idioma</string>
+    <string name="english">Inglés</string>
+    <string name="spanish">Español</string>
+    <string name="explanation_text">Ha habido un apagón en el aeropuerto. Esta app te permite compartir y consultar información crítica de vuelos y personas a tu alrededor sin conexión a internet.</string>
+    <string name="btn_continue">Continuar</string>
+    <string name="btn_flights">Información de vuelos</string>
+    <string name="btn_people">Ubicación de personas</string>
+    <string name="btn_alerts">Alertas</string>
+    <string name="label_gate">Gate</string>
+    <string name="label_boarding">Boarding</string>
+    <string name="label_status">Status</string>
+    <string name="status_on_time">En hora</string>
+    <string name="status_delayed">Retrasado</string>
+    <string name="status_boarding">Embarcando</string>
+    <string name="status_cancelled">Cancelado</string>
+    <string name="search_people_hint">Buscar personas</string>
+
+</resources>

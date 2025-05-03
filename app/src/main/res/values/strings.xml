@@ -1,6 +1,20 @@
 <resources>
     <string name="app_name">SignalChain</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="choose_language">Choose your language</string>
+    <string name="english">English</string>
+    <string name="spanish">Spanish</string>
+    <string name="explanation_text">There has been a blackout at the airport. This app lets you share and access critical flight and people information nearby, even without internet connection.</string>
+    <string name="btn_continue">Continue</string>
+    <string name="btn_flights">Flight Info</string>
+    <string name="btn_people">People Location</string>
+    <string name="btn_alerts">Alerts</string>
+    <string name="label_gate">Gate</string>
+    <string name="label_boarding">Boarding</string>
+    <string name="label_status">Status</string>
+    <string name="status_on_time">On Time</string>
+    <string name="status_delayed">Delayed</string>
+    <string name="status_boarding">Boarding</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="search_people_hint">Search people</string>
+
 </resources>

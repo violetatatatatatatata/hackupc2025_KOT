@@ -1,35 +1,44 @@
 package cat.hackupc.signalchain
 
+import android.content.Context
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import cat.hackupc.signalchain.databinding.ActivityMainBinding
+import android.content.Intent
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    override fun attachBaseContext(newBase: Context) {
+        val lang = newBase.getSharedPreferences("settings", MODE_PRIVATE).getString("lang", "en") ?: "en"
+        super.attachBaseContext(LocaleHelper.setLocale(newBase, lang))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        val btnFlights = findViewById<Button>(R.id.btnFlights)
+        val btnPeople = findViewById<Button>(R.id.btnPeople)
+        val btnAlerts = findViewById<Button>(R.id.btnAlerts)
 
-        val navView: BottomNavigationView = binding.navView
+        btnFlights.text = getString(R.string.btn_flights)
+        btnPeople.text = getString(R.string.btn_people)
+        btnAlerts.text = getString(R.string.btn_alerts)
 
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        btnFlights.setOnClickListener {
+            val intent = Intent(this, FlightListActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnPeople.setOnClickListener {
+            val intent = Intent(this, PersonListActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnAlerts.setOnClickListener {
+            val intent = Intent(this, AlertListActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
