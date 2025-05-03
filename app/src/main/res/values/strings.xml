@@ -37,5 +37,8 @@
     <string name="hint_alert_message">Alert message</string>
     <string name="toast_fill_alert">Please fill in title and message</string>
     <string name="add_alert">Add alert</string>
-
+    <string name="flight_number">Número de vuelo</string>
+    <string name="destination">Destino</string>
+    <string name="gate">Puerta</string>
+    <string name="boarding_time">Hora de embarque</string>
 </resources>

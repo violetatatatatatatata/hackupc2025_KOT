@@ -9,9 +9,9 @@
     <string name="btn_flights">Información de vuelos</string>
     <string name="btn_people">Ubicación de personas</string>
     <string name="btn_alerts">Alertas</string>
-    <string name="label_gate">Gate</string>
-    <string name="label_boarding">Boarding</string>
-    <string name="label_status">Status</string>
+    <string name="label_gate">Puerta</string>
+    <string name="label_boarding">Embarque</string>
+    <string name="label_status">Estatus</string>
     <string name="status_on_time">En hora</string>
     <string name="status_delayed">Retrasado</string>
     <string name="status_boarding">Embarcando</string>
@@ -38,5 +38,8 @@
     <string name="hint_alert_message">Mensaje de la alerta</string>
     <string name="toast_fill_alert">Por favor, rellena el título y el mensaje</string>
     <string name="add_alert">Añadir alerta</string>
-
+    <string name="flight_number">Flight number</string>
+    <string name="destination">Destination</string>
+    <string name="gate">Gate</string>
+    <string name="boarding_time">Boarding time</string>
 </resources>
