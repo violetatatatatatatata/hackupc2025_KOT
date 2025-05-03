@@ -1,45 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#000000"
-    android:padding="16dp">
+    android:background="#000000">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#000000"
-        android:elevation="4dp"
-        android:title="@string/app_name"
-        android:titleTextColor="@android:color/white"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#000000"
+            android:elevation="4dp"
+            android:title="@string/app_name"
+            android:titleTextColor="@android:color/white"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
-    <TextView
-        android:id="@+id/tvFlightListTitle"
+        <SearchView
+            android:id="@+id/flightSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="@string/search_hint"
+            android:iconifiedByDefault="false"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/flightRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <!-- FAB para añadir vuelo -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddFlight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"
-        android:text="@string/btn_flights" />
-
-    <SearchView
-        android:id="@+id/flightSearchView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:queryHint="Search flights"
-        android:iconifiedByDefault="false"
-        android:layout_marginBottom="8dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/flightRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-</LinearLayout>
-
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:contentDescription="@string/add_flight"
+        android:src="@android:drawable/ic_input_add"
+        app:tint="@android:color/white"
+        app:backgroundTint="#444444" />
+</FrameLayout>

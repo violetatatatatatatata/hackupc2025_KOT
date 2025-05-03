@@ -1,19 +1,23 @@
 package cat.hackupc.signalchain
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.SearchView
-import android.widget.TextView
 import android.widget.EditText
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cat.hackupc.signalchain.model.Flight
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.appcompat.widget.Toolbar
 
-
 class FlightListActivity : AppCompatActivity() {
+
+    private val ADD_FLIGHT_REQUEST_CODE = 102
+    private val allFlights = mutableListOf<Flight>()
+    private lateinit var adapter: FlightAdapter
 
     override fun attachBaseContext(newBase: Context) {
         val lang = newBase.getSharedPreferences("settings", MODE_PRIVATE).getString("lang", "en") ?: "en"
@@ -31,46 +35,55 @@ class FlightListActivity : AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true)
         }
 
+        allFlights.addAll(
+            listOf(
+                Flight("IB123", "Barcelona", "A1", "10:45", R.string.status_on_time),
+                Flight("VY456", "Madrid", "B2", "11:30", R.string.status_delayed),
+                Flight("UX789", "Valencia", "C3", "12:15", R.string.status_boarding)
+            )
+        )
 
         val recyclerView = findViewById<RecyclerView>(R.id.flightRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val flights = listOf(
-            Flight("IB123", "Barcelona", "A1", "10:45", R.string.status_on_time),
-            Flight("VY456", "Madrid", "B2", "11:30", R.string.status_delayed),
-            Flight("UX789", "Valencia", "C3", "12:15", R.string.status_boarding)
-        )
-
-        val adapter = FlightAdapter(flights)
+        adapter = FlightAdapter(allFlights)
         recyclerView.adapter = adapter
 
         val searchView = findViewById<SearchView>(R.id.flightSearchView)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextSubmit(query: String?) = false
             override fun onQueryTextChange(newText: String?): Boolean {
                 adapter.filter(newText ?: "")
                 return true
             }
         })
 
-        // 👇 Aplicamos color al texto y hint del SearchView tras cargar la vista
         searchView.post {
-            val searchEditText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-            searchEditText?.apply {
-                setTextColor(Color.WHITE)
-                setHintTextColor(Color.WHITE)
-                setBackgroundColor(Color.TRANSPARENT)
-                highlightColor = Color.WHITE
-                setCursorVisible(true)
-            }
+            val searchText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+            searchText?.setTextColor(Color.WHITE)
+            searchText?.setHintTextColor(Color.GRAY)
         }
 
-
+        // FAB: Añadir vuelo
+        findViewById<FloatingActionButton>(R.id.fabAddFlight).setOnClickListener {
+            val intent = Intent(this, AddFlightActivity::class.java)
+            startActivityForResult(intent, ADD_FLIGHT_REQUEST_CODE)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        finish() // Cierra la actividad actual y vuelve al MainActivity
+        finish()
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == ADD_FLIGHT_REQUEST_CODE && resultCode == RESULT_OK) {
+            val flight = data?.getSerializableExtra("flight") as? Flight
+            flight?.let {
+                allFlights.add(it)
+                adapter.filter("") // recarga
+            }
+        }
+    }
 }

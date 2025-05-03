@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_flight_title"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
+            android:id="@+id/editFlightNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_flight_number"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:backgroundTint="#555555"
+            android:inputType="text"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/editDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_destination"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:backgroundTint="#555555"
+            android:inputType="text"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/editGate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_gate"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:backgroundTint="#555555"
+            android:inputType="text"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/editBoardingTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_boarding_time"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:backgroundTint="#555555"
+            android:inputType="time"
+            android:layout_marginBottom="12dp" />
+
+        <Spinner
+            android:id="@+id/spinnerStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btnCancelFlight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_cancel"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#666666"
+                android:layout_marginEnd="12dp" />
+
+            <Button
+                android:id="@+id/btnSaveFlight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_save"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#3F51B5" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

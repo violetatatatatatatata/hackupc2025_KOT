@@ -16,5 +16,26 @@
     <string name="status_boarding">Boarding</string>
     <string name="status_cancelled">Cancelled</string>
     <string name="search_people_hint">Search people</string>
+    <string name="add_person">Add person</string>
+    <string name="add_person_title">Add or update person</string>
+    <string name="hint_first_name">First name</string>
+    <string name="hint_last_name">Last name</string>
+    <string name="hint_location">Location (e.g. near gate A2)</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    <string name="toast_fill_fields">Please fill in name and location</string>
+    <string name="add_flight">Add flight</string>
+    <string name="search_hint">Search flights</string>
+    <string name="add_flight_title">Add or update flight</string>
+    <string name="hint_flight_number">Flight number</string>
+    <string name="hint_destination">Destination</string>
+    <string name="hint_gate">Gate</string>
+    <string name="hint_boarding_time">Boarding time (e.g. 11:30)</string>
+    <string name="toast_fill_flight">Please fill in all fields</string>
+    <string name="add_alert_title">Add or update alert</string>
+    <string name="hint_alert_title">Title</string>
+    <string name="hint_alert_message">Alert message</string>
+    <string name="toast_fill_alert">Please fill in title and message</string>
+    <string name="add_alert">Add alert</string>
 
 </resources>

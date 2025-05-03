@@ -40,6 +40,12 @@
 
         <activity android:name=".AlertListActivity" />
 
+        <activity android:name=".AddPersonActivity" />
+
+        <activity android:name=".AddFlightActivity" />
+
+        <activity android:name=".AddAlertActivity" />
+
     </application>
 
 </manifest>
