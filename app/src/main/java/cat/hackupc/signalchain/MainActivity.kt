@@ -87,7 +87,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         val service = BluetoothSyncService(
-            bluetoothAdapter,
+            context = this,
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter(),
             getLocalData = {
                 SharedData(
                     FlightRepository.flights,
@@ -104,7 +105,6 @@ class MainActivity : AppCompatActivity() {
                 PersonListActivity.refreshData()
                 AlertListActivity.refreshData()
             }
-
         )
 
         service.start()
