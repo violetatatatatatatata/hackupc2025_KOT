@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
+    <!-- ✅ Bluetooth permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <!-- Para Android 12+ -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -21,38 +21,27 @@
         android:theme="@style/Theme.SignalChain"
         tools:targetApi="31">
 
-        <!-- LanguageSelection is now the launcher activity -->
-        <activity
-            android:name=".LanguageSelectionActivity"
-            android:exported="true"
-            android:theme="@style/Theme.SignalChain">
+        <!-- Pantallas -->
+        <activity android:name=".LanguageSelectionActivity" android:exported="false"/>
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ExplanationActivity"
-            android:exported="false"
-            android:theme="@style/Theme.SignalChain" />
-
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:label="@string/app_name" />
-
+        <!-- Lista y formularios -->
         <activity android:name=".FlightListActivity" />
-
-        <activity android:name=".PersonListActivity" />
-
-        <activity android:name=".AlertListActivity" />
-
-        <activity android:name=".AddPersonActivity" />
-
         <activity android:name=".AddFlightActivity" />
 
+        <activity android:name=".PersonListActivity" />
+        <activity android:name=".AddPersonActivity" />
+
+        <activity android:name=".AlertListActivity" />
         <activity android:name=".AddAlertActivity" />
+
+        <!-- Bluetooth service pendiente -->
+        <!-- <service android:name=".sync.BluetoothSyncService" /> -->
 
     </application>
 

@@ -1,14 +1,8 @@
 package cat.hackupc.signalchain.sync
 
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothServerSocket
-import android.bluetooth.BluetoothSocket
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.bluetooth.*
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
@@ -32,7 +26,7 @@ class BluetoothSyncService(
 
     fun start() {
         listenForConnections()
-        searchForPeers()
+        searchPeriodically()
     }
 
     private fun listenForConnections() {
@@ -47,12 +41,12 @@ class BluetoothSyncService(
             try {
                 val serverSocket: BluetoothServerSocket =
                     bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(serviceName, uuid)
+                Log.d("BluetoothSync", "Listening for incoming connections...")
 
                 while (true) {
                     val socket: BluetoothSocket = serverSocket.accept()
+                    Log.d("BluetoothSync", "Accepted incoming connection")
                     handleSocket(socket)
-                    serverSocket.close()
-                    break
                 }
             } catch (e: IOException) {
                 Log.e("BluetoothSync", "Server error: ${e.message}")
@@ -60,89 +54,103 @@ class BluetoothSyncService(
         }
     }
 
-    private fun searchForPeers() {
+    private fun searchPeriodically() {
         connectThread = thread {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
-            ) {
-                Log.w("BluetoothSync", "Missing BLUETOOTH_CONNECT permission")
-                return@thread
-            }
-
-            val pairedDevices = bluetoothAdapter.bondedDevices
-            val discoveredDevices = mutableSetOf<BluetoothDevice>()
-
-            for (device in pairedDevices) {
+            while (true) {
                 try {
-                    Log.d("BluetoothSync", "Trying paired device: ${device.name}")
-                    val method = device.javaClass.getMethod(
-                        "createInsecureRfcommSocketToServiceRecord",
-                        UUID::class.java
-                    )
-                    val socket = method.invoke(device, uuid) as BluetoothSocket
-
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        bluetoothAdapter.cancelDiscovery()
-                    }
-
-                    socket.connect()
-                    handleSocket(socket)
-                    return@thread
+                    searchForPeers()
                 } catch (e: Exception) {
-                    Log.w("BluetoothSync", "Failed to connect to paired ${device.name}: ${e.message}")
+                    Log.e("BluetoothSync", "Error while searching: ${e.message}")
                 }
+                Thread.sleep(30000) // Reintenta cada 30 segundos
             }
+        }
+    }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
-            ) {
-                Log.w("BluetoothSync", "Missing BLUETOOTH_SCAN permission")
-                return@thread
+    private fun searchForPeers() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.w("BluetoothSync", "Missing BLUETOOTH_CONNECT permission")
+            return
+        }
+
+        val pairedDevices = bluetoothAdapter.bondedDevices
+
+        for (device in pairedDevices) {
+            try {
+                Log.d("BluetoothSync", "Trying paired device: ${device.name}")
+                val method = device.javaClass.getMethod(
+                    "createInsecureRfcommSocketToServiceRecord",
+                    UUID::class.java
+                )
+                val socket = method.invoke(device, uuid) as BluetoothSocket
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    bluetoothAdapter.cancelDiscovery()
+                }
+
+                socket.connect()
+                Log.d("BluetoothSync", "Connected to paired device: ${device.name}")
+                handleSocket(socket)
+                return
+            } catch (e: Exception) {
+                Log.w("BluetoothSync", "Failed to connect to paired ${device.name}: ${e.message}")
             }
+        }
 
-            bluetoothAdapter.startDiscovery()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.w("BluetoothSync", "Missing BLUETOOTH_SCAN permission")
+            return
+        }
 
-            val receiver = object : BroadcastReceiver() {
-                override fun onReceive(ctx: Context?, intent: Intent?) {
-                    val action = intent?.action
-                    if (BluetoothDevice.ACTION_FOUND == action) {
-                        val device: BluetoothDevice? =
-                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+        bluetoothAdapter.startDiscovery()
+        Log.d("BluetoothSync", "Started discovery for nearby devices")
 
-                        device?.let {
-                            if (!discoveredDevices.contains(it)) {
-                                discoveredDevices.add(it)
-                                try {
-                                    Log.d("BluetoothSync", "Trying discovered device: ${it.name}")
-                                    val method = it.javaClass.getMethod(
-                                        "createInsecureRfcommSocketToServiceRecord",
-                                        UUID::class.java
-                                    )
-                                    val socket = method.invoke(it, uuid) as BluetoothSocket
+        val discoveredDevices = mutableSetOf<BluetoothDevice>()
 
-                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-                                        ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        bluetoothAdapter.cancelDiscovery()
-                                    }
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context?, intent: Intent?) {
+                if (intent?.action == BluetoothDevice.ACTION_FOUND) {
+                    val device: BluetoothDevice? =
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
 
-                                    socket.connect()
-                                    handleSocket(socket)
-                                    context.unregisterReceiver(this)
-                                } catch (e: Exception) {
-                                    Log.w("BluetoothSync", "Failed to connect to discovered ${it.name}: ${e.message}")
+                    device?.let {
+                        if (!discoveredDevices.contains(it) && it.name != null) {
+                            discoveredDevices.add(it)
+                            try {
+                                Log.d("BluetoothSync", "Trying discovered device: ${it.name}")
+                                val method = it.javaClass.getMethod(
+                                    "createInsecureRfcommSocketToServiceRecord",
+                                    UUID::class.java
+                                )
+                                val socket = method.invoke(it, uuid) as BluetoothSocket
+
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                                    ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    bluetoothAdapter.cancelDiscovery()
                                 }
+
+                                socket.connect()
+                                Log.d("BluetoothSync", "Connected to discovered device: ${it.name}")
+                                handleSocket(socket)
+                                context.unregisterReceiver(this)
+                            } catch (e: Exception) {
+                                Log.w("BluetoothSync", "Failed to connect to discovered ${it.name}: ${e.message}")
                             }
                         }
                     }
                 }
             }
-
-            val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-            context.registerReceiver(receiver, filter)
         }
+
+        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+        context.registerReceiver(receiver, filter)
     }
 
     private fun handleSocket(socket: BluetoothSocket) {
@@ -157,6 +165,7 @@ class BluetoothSyncService(
 
                 val incomingJson = input.readLine()
                 val receivedData = SharedData.fromJson(incomingJson)
+                Log.d("BluetoothSync", "Data received from peer. Merging...")
                 onDataReceived(receivedData)
 
                 socket.close()

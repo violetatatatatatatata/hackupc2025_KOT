@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,12 +16,6 @@ import cat.hackupc.signalchain.sync.BluetoothSyncService
 import cat.hackupc.signalchain.repository.FlightRepository
 import cat.hackupc.signalchain.repository.PersonRepository
 import cat.hackupc.signalchain.repository.AlertRepository
-import cat.hackupc.signalchain.FlightListActivity
-import cat.hackupc.signalchain.PersonListActivity
-import cat.hackupc.signalchain.AlertListActivity
-
-
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,18 +37,15 @@ class MainActivity : AppCompatActivity() {
         btnAlerts.text = getString(R.string.btn_alerts)
 
         btnFlights.setOnClickListener {
-            val intent = Intent(this, FlightListActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, FlightListActivity::class.java))
         }
 
         btnPeople.setOnClickListener {
-            val intent = Intent(this, PersonListActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, PersonListActivity::class.java))
         }
 
         btnAlerts.setOnClickListener {
-            val intent = Intent(this, AlertListActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, AlertListActivity::class.java))
         }
 
         checkAndStartBluetoothSync()
@@ -61,16 +53,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAndStartBluetoothSync() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
-                checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            val permissions = arrayOf(
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
 
-                requestPermissions(
-                    arrayOf(
-                        Manifest.permission.BLUETOOTH_CONNECT,
-                        Manifest.permission.BLUETOOTH_SCAN
-                    ),
-                    1001
-                )
+            val missingPermissions = permissions.filter {
+                checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+            }
+
+            if (missingPermissions.isNotEmpty()) {
+                requestPermissions(missingPermissions.toTypedArray(), 1001)
                 return
             }
         }
@@ -88,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         val service = BluetoothSyncService(
             context = this,
-            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter(),
+            bluetoothAdapter = bluetoothAdapter,
             getLocalData = {
                 SharedData(
                     FlightRepository.flights,
@@ -106,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 AlertListActivity.refreshData()
             }
         )
-
+        Log.d("BluetoothDebug", "Bluetooth enabled: ${bluetoothAdapter.isEnabled}")
         service.start()
     }
 
